@@ -1,0 +1,154 @@
+{
+  "project_name": "GramCare",
+  "design_philosophy": {
+    "identity": "E1: The Anti-AI Designer",
+    "core_principles": [
+      "Fusion over Imitation: Medical precision meets rural warmth.",
+      "Emotion First: Trust, Calm, and Urgency where needed.",
+      "Content is King: Data legibility is the primary story.",
+      "Zoom In: High contrast for critical vitals.",
+      "Negative Space: Reduce cognitive load for tired healthcare workers."
+    ],
+    "anti_patterns": [
+      "Low contrast text (grey on grey).",
+      "Gradients on data values.",
+      "Generic 'Bootstrap' layouts."
+    ]
+  },
+  "typography": {
+    "font_family": {
+      "headings": "Manrope, sans-serif",
+      "body": "Inter, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "scale": {
+      "h1": "text-4xl font-bold tracking-tight",
+      "h2": "text-3xl font-semibold tracking-tight",
+      "h3": "text-2xl font-semibold",
+      "body_large": "text-lg leading-relaxed",
+      "body_default": "text-base leading-relaxed",
+      "caption": "text-sm text-muted-foreground"
+    },
+    "imports": [
+      "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');"
+    ]
+  },
+  "colors": {
+    "light_theme": {
+      "background": "#f8fafc",
+      "foreground": "#0f172a",
+      "card": "#ffffff",
+      "card_foreground": "#0f172a",
+      "popover": "#ffffff",
+      "popover_foreground": "#0f172a",
+      "primary": "#7db540",
+      "primary_foreground": "#ffffff",
+      "secondary": "#f1f5f9",
+      "secondary_foreground": "#0f172a",
+      "muted": "#f1f5f9",
+      "muted_foreground": "#64748b",
+      "accent": "#f1f5f9",
+      "accent_foreground": "#0f172a",
+      "destructive": "#ef4444",
+      "destructive_foreground": "#ffffff",
+      "border": "#e2e8f0",
+      "input": "#e2e8f0",
+      "ring": "#7db540"
+    },
+    "dark_theme": {
+      "background": "#020617",
+      "foreground": "#f8fafc",
+      "card": "#1e293b",
+      "card_foreground": "#f8fafc",
+      "popover": "#1e293b",
+      "popover_foreground": "#f8fafc",
+      "primary": "#7db540",
+      "primary_foreground": "#ffffff",
+      "secondary": "#334155",
+      "secondary_foreground": "#f8fafc",
+      "muted": "#334155",
+      "muted_foreground": "#94a3b8",
+      "accent": "#1e293b",
+      "accent_foreground": "#f8fafc",
+      "destructive": "#7f1d1d",
+      "destructive_foreground": "#f8fafc",
+      "border": "#334155",
+      "input": "#334155",
+      "ring": "#7db540"
+    },
+    "status_colors": {
+      "success": "#22c55e",
+      "warning": "#f59e0b",
+      "error": "#ef4444",
+      "info": "#3b82f6"
+    }
+  },
+  "layout": {
+    "grid_system": "Bento Grid Mode B (High Density)",
+    "spacing": {
+      "container_padding": "p-6 md:p-8",
+      "gap": "gap-6",
+      "card_padding": "p-6"
+    },
+    "sidebar": {
+      "width_expanded": "w-64",
+      "width_collapsed": "w-20",
+      "bg_color": "bg-card",
+      "border_color": "border-border"
+    },
+    "header": {
+      "height": "h-16",
+      "bg_color": "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+    }
+  },
+  "components": {
+    "buttons": {
+      "default": "rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+      "primary": "bg-primary text-primary-foreground hover:bg-primary/90",
+      "secondary": "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+      "ghost": "hover:bg-accent hover:text-accent-foreground",
+      "destructive": "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+    },
+    "cards": {
+      "base": "rounded-xl border bg-card text-card-foreground shadow-sm",
+      "emergency": "border-red-200 bg-red-50 dark:bg-red-950/20 dark:border-red-900"
+    },
+    "inputs": {
+      "base": "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+      "error": "border-red-500 focus-visible:ring-red-500"
+    }
+  },
+  "assets": {
+    "logo_url": "https://images.pexels.com/photos/4884210/pexels-photo-4884210.jpeg",
+    "user_avatar": "https://images.unsplash.com/photo-1659353888906-adb3e0041693?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwyfHxpbmRpYW4lMjBkb2N0b3IlMjBwb3J0cmFpdCUyMHByb2Zlc3Npb25hbHxlbnwwfHx8fDE3NzAwNDAyMjR8MA&ixlib=rb-4.1.0&q=85",
+    "icons_library": "lucide-react"
+  },
+  "accessibility": {
+    "contrast_check": "Ensure 4.5:1 contrast ratio for normal text.",
+    "focus_states": "Visible focus rings on all interactive elements.",
+    "aria_labels": "Required for all icon-only buttons."
+  },
+  "instructions_to_main_agent": [
+    "Implement the Dark Mode toggle using a context provider or simple state that toggles the 'dark' class on the html/body element.",
+    "Use the 'Manrope' font for all headings to give a modern, friendly medical feel.",
+    "The Sidebar must be collapsible. When active, the link background should be #7db540 (primary) with white text.",
+    "The 'Emergency Action Hub' card must have a distinct red tint (bg-red-50 dark:bg-red-900/20) to stand out.",
+    "Vitals Entry Form: Implement real-time validation. If SpO2 < 94 or Temp > 101, the input border must turn red immediately.",
+    "Use 'lucide-react' for all icons.",
+    "Ensure all interactive elements have data-testid attributes.",
+    "Do not use gradients for the main background; keep it clean and solid for readability."
+  ],
+  "universal_guidelines": [
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy.",
+    "Use glass-morphism effects with backdrop filters (12-24px blur) for the top navigation.",
+    "You MUST NOT apply universal transition. Eg: transition: all.",
+    "You MUST NOT center align the app container.",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations.",
+    "NEVER use AI assistant Emoji characters for icons.",
+    "Every interaction needs micro-animations - hover states, transitions.",
+    "Use 2-3x more spacing than feels comfortable.",
+    "Use sonner for toasts."
+  ]
+}
