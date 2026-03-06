@@ -23,10 +23,11 @@ code {
         --card-foreground: 222.2 47.4% 11.2%;
         --popover: 0 0% 100%;
         --popover-foreground: 222.2 47.4% 11.2%;
-        --primary: 87 48% 55%;
-        --primary-foreground: 0 0% 100%;
-        --secondary: 210 40% 96.1%;
-        --secondary-foreground: 222.2 47.4% 11.2%;
+        --primary: 142.1 76.2% 36.3%;
+        /* Green shade */
+        --primary-foreground: 355.7 100% 97.3%;
+        --secondary: 142.1 76.2% 36.3%;
+        --secondary-foreground: 355.7 100% 97.3%;
         --muted: 210 40% 96.1%;
         --muted-foreground: 215.4 16.3% 46.9%;
         --accent: 210 40% 96.1%;
@@ -35,10 +36,11 @@ code {
         --destructive-foreground: 0 0% 98%;
         --border: 214.3 31.8% 91.4%;
         --input: 214.3 31.8% 91.4%;
-        --ring: 87 48% 55%;
+        --ring: 142.1 76.2% 36.3%;
+        /* Green shade */
         --radius: 0.75rem;
     }
-    
+
     .dark {
         --background: 222.2 84% 4.9%;
         --foreground: 210 40% 98%;
@@ -46,10 +48,11 @@ code {
         --card-foreground: 210 40% 98%;
         --popover: 217.2 32.6% 17.5%;
         --popover-foreground: 210 40% 98%;
-        --primary: 87 48% 55%;
-        --primary-foreground: 0 0% 100%;
-        --secondary: 217.2 32.6% 20%;
-        --secondary-foreground: 210 40% 98%;
+        --primary: 142.1 70.6% 45.3%;
+        /* Green shade */
+        --primary-foreground: 144.9 80.4% 10%;
+        --secondary: 142.1 70.6% 45.3%;
+        --secondary-foreground: 144.9 80.4% 10%;
         --muted: 217.2 32.6% 20%;
         --muted-foreground: 215 20.2% 65.1%;
         --accent: 217.2 32.6% 17.5%;
@@ -58,7 +61,8 @@ code {
         --destructive-foreground: 210 40% 98%;
         --border: 217.2 32.6% 20%;
         --input: 217.2 32.6% 20%;
-        --ring: 87 48% 55%;
+        --ring: 142.1 70.6% 45.3%;
+        /* Green shade */
     }
 }
 
@@ -66,10 +70,17 @@ code {
     * {
         @apply border-border;
     }
+
     body {
         @apply bg-background text-foreground;
     }
-    h1, h2, h3, h4, h5, h6 {
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
         font-family: 'Manrope', sans-serif;
     }
 }
@@ -80,7 +91,7 @@ code {
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
     }
-    
+
     .dark .glass-effect {
         background: rgba(30, 41, 59, 0.7);
         backdrop-filter: blur(16px);
@@ -93,7 +104,7 @@ code {
         display: contents !important;
     }
 
-    [data-debug-wrapper="true"] > * {
+    [data-debug-wrapper="true"]>* {
         margin-left: inherit;
         margin-right: inherit;
         margin-top: inherit;

@@ -1,122 +1,462 @@
 /* Custom animations and styles for GramCare */
 
 @keyframes pulse-gentle {
-    0%, 100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.85;
-    }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.85;
+  }
 }
 
 @keyframes slide-in {
-    from {
-        transform: translateX(-20px);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
+  from {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 @keyframes fade-in {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .animate-pulse-gentle {
-    animation: pulse-gentle 2s ease-in-out infinite;
+  animation: pulse-gentle 2s ease-in-out infinite;
 }
 
 .animate-slide-in {
-    animation: slide-in 0.3s ease-out;
+  animation: slide-in 0.3s ease-out;
 }
 
 .animate-fade-in {
-    animation: fade-in 0.4s ease-out;
+  animation: fade-in 0.4s ease-out;
 }
 
 /* Smooth transitions for interactive elements */
-button, a, .interactive {
-    transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+button,
+a,
+.interactive {
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
 }
 
 button:active {
-    transform: scale(0.98);
+  transform: scale(0.98);
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-    background: hsl(var(--muted));
+  background: hsl(var(--muted));
 }
 
 ::-webkit-scrollbar-thumb {
-    background: hsl(var(--primary));
-    border-radius: 4px;
+  background: hsl(var(--primary));
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--primary) / 0.8);
+  background: hsl(var(--primary) / 0.8);
 }
 
 /* Status indicators */
 .status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    display: inline-block;
-    margin-right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
 }
 
 .status-waiting {
-    background-color: #f59e0b;
-    box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+  background-color: #f59e0b;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
 }
 
 .status-completed {
-    background-color: #22c55e;
-    box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+  background-color: #22c55e;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
 }
 
 .status-critical {
-    background-color: #ef4444;
-    box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
-    animation: pulse-gentle 1.5s ease-in-out infinite;
+  background-color: #ef4444;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+  animation: pulse-gentle 1.5s ease-in-out infinite;
 }
 
 .status-in-consultation {
-    background-color: #3b82f6;
-    box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+  background-color: #3b82f6;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
 }
 
 /* Card hover effects */
 .card-hover {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .card-hover:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 /* Input focus effects */
-input:focus, textarea:focus, select:focus {
-    outline: none;
-    ring: 2px;
-    ring-color: hsl(var(--ring));
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
 }
 
 /* Emergency card pulse */
 .emergency-card {
-    animation: pulse-gentle 3s ease-in-out infinite;
+  animation: pulse-gentle 3s ease-in-out infinite;
+}
+
+/* ============================================== */
+/* LOGIN PAGE STYLES */
+/* ============================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Split Container */
+.split-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Split Sides */
+.split-side {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  height: 100vh;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.split-side.expanded {
+  width: 100%;
+  cursor: default;
+}
+
+.split-side.collapsed {
+  width: 0%;
+  pointer-events: none;
+}
+
+/* Health Center - Green */
+.health-center {
+  background: linear-gradient(135deg, #7CB342 0%, #8BC34A 100%);
+  transition: width 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* Doctor - Blue */
+.doctor {
+  background: linear-gradient(135deg, #42A5F5 0%, #64B5F6 100%);
+  transition: width 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* Side Content */
+.side-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  color: white;
+  z-index: 1;
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: none;
+  transition: transform 0.8s cubic-bezier(0.4, 0.0, 0.2, 1),
+    opacity 0.3s ease;
+}
+
+/* Slide left when health center (left side) is clicked */
+.health-center.expanded .side-content {
+  transform: translateX(-150%);
+  opacity: 0;
+}
+
+/* Slide right when doctor (right side) is clicked */
+.doctor.expanded .side-content {
+  transform: translateX(150%);
+  opacity: 0;
+}
+
+/* Hide collapsed side content without animation */
+.split-side.collapsed .side-content {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.side-content svg {
+  filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.2));
+}
+
+.side-title {
+  font-size: 3.5rem;
+  font-weight: 700;
+  letter-spacing: -1px;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin: 0;
+}
+
+.action-btn {
+  background: rgba(255, 255, 255, 0.95);
+  color: #333;
+  border: none;
+  padding: 1rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  pointer-events: all;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.action-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+  background: white;
+}
+
+.action-btn:active {
+  transform: translateY(-1px);
+}
+
+/* Central Logo */
+.central-logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  width: 280px;
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 50%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  padding: 30px;
+  transition: left 0.8s cubic-bezier(0.4, 0.0, 0.2, 1),
+    opacity 0.3s ease;
+}
+
+.central-logo.move-left {
+  left: 0;
+  transform: translate(-50%, -50%);
+  opacity: 1;
+}
+
+.central-logo.move-right {
+  left: 100%;
+  transform: translate(-50%, -50%);
+  opacity: 1;
+}
+
+.central-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Login Form Container */
+.login-form-container {
+  width: 100%;
+  max-width: 420px;
+  padding: 2rem;
+  opacity: 0;
+}
+
+.login-form-container.fade-in {
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.logo-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.center-logo {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  background: white;
+  border-radius: 50%;
+  padding: 15px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Form Styles */
+form {
+  background: rgba(255, 255, 255, 0.98);
+  padding: 2rem 2rem;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+}
+
+.form-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.5px;
+}
+
+.input-group {
+  margin-bottom: 1.25rem;
+}
+
+.input-group label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.4rem;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  font-size: 0.95rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  outline: none;
+  background: white;
+  color: #333;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-group input:focus {
+  border-color: #42A5F5;
+}
+
+.health-center .input-group input:focus {
+  border-color: #7CB342;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 0.9rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 0.75rem;
+  color: white;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.doctor .submit-btn {
+  background: linear-gradient(135deg, #42A5F5, #1E88E5);
+  box-shadow: 0 4px 12px rgba(66, 165, 245, 0.4);
+}
+
+.health-center .submit-btn {
+  background: linear-gradient(135deg, #7CB342, #689F38);
+  box-shadow: 0 4px 12px rgba(124, 179, 66, 0.4);
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.submit-btn:active {
+  transform: translateY(0);
+}
+
+.back-btn {
+  width: 100%;
+  padding: 0.8rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  background: transparent;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 0.75rem;
+  color: #666;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.back-btn:hover {
+  border-color: #999;
+  color: #333;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .side-title {
+    font-size: 2.5rem;
+  }
+
+  .action-btn {
+    padding: 0.9rem 2rem;
+    font-size: 1rem;
+  }
+
+  .central-logo {
+    width: 200px;
+    height: 200px;
+  }
+
+  .login-form-container {
+    max-width: 90%;
+    padding: 2rem 1rem;
+  }
+
+  form {
+    padding: 2rem 1.5rem;
+  }
+
+  .form-title {
+    font-size: 1.5rem;
+  }
+
+  .center-logo {
+    width: 120px;
+    height: 120px;
+  }
 }

@@ -1,26 +1,26 @@
 import { useState, useEffect } from "react";
-import "@/App.css";
+import "./App.css";
 import { BrowserRouter, Routes, Route, Link, useLocation } from "react-router-dom";
 import { 
-  Home, Users, Calendar, Activity, Package, FileText, 
+  Home, Users, Calendar, Activity, FileText, 
   Menu, X, Sun, Moon, Bell, Search, Settings, LogOut,
-  UserPlus, Clock, AlertCircle
+  Stethoscope, ClipboardList, Video, UserCheck, BarChart3
 } from "lucide-react";
 import { Toaster } from "./components/ui/sonner";
-import Dashboard from "./components/Dashboard";
-import PatientRegistration from "./components/PatientRegistration";
-import MedicalHistory from "./components/MedicalHistory";
-import Appointments from "./components/Appointments";
-import MedicineInventory from "./components/MedicineInventory";
-import PatientSearch from "./components/PatientSearch";
+import DoctorDashboard from "./components/doctor/DoctorDashboard";
+import PatientQueue from "./components/doctor/PatientQueue";
+import ConsultationInterface from "./components/doctor/ConsultationInterfaceSimple";
+import DoctorAppointments from "./components/doctor/DoctorAppointments";
+import PatientHistoryDoctor from "./components/doctor/PatientHistoryDoctor";
+import { doctorProfile } from "./mockDataDoctor";
 
-function App({ onLogout }) {
+function DoctorApp({ onLogout }) {
   const [darkMode, setDarkMode] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     // Set page title
-    document.title = "GramCare | RHC";
+    document.title = "GramCare | DP";
     
     if (darkMode) {
       document.documentElement.classList.add('dark');
@@ -32,7 +32,7 @@ function App({ onLogout }) {
   return (
     <div className="App min-h-screen bg-background">
       <BrowserRouter>
-        <AppContent 
+        <DoctorAppContent 
           darkMode={darkMode}
           setDarkMode={setDarkMode}
           sidebarCollapsed={sidebarCollapsed}
@@ -45,15 +45,15 @@ function App({ onLogout }) {
   );
 }
 
-function AppContent({ darkMode, setDarkMode, sidebarCollapsed, setSidebarCollapsed, onLogout }) {
+function DoctorAppContent({ darkMode, setDarkMode, sidebarCollapsed, setSidebarCollapsed, onLogout }) {
   const location = useLocation();
 
   const navItems = [
     { path: '/', icon: Home, label: 'Dashboard' },
-    { path: '/register', icon: UserPlus, label: 'Register Patient' },
-    { path: '/history', icon: Activity, label: 'Medical History' },
+    { path: '/queue', icon: ClipboardList, label: 'Patient Queue' },
+    { path: '/consultation', icon: Stethoscope, label: 'Consultation' },
     { path: '/appointments', icon: Calendar, label: 'Appointments' },
-    { path: '/inventory', icon: Package, label: 'Medicine Inventory' },
+    { path: '/patient-history', icon: Activity, label: 'Patient History' },
   ];
 
   return (
@@ -74,9 +74,12 @@ function AppContent({ darkMode, setDarkMode, sidebarCollapsed, setSidebarCollaps
                 alt="GramCare Logo" 
                 className="w-8 h-8 object-contain"
               />
-              <span className="font-bold text-lg text-foreground" style={{fontFamily: 'Manrope'}}>
-                GramCare
-              </span>
+              <div>
+                <span className="font-bold text-lg text-foreground block" style={{fontFamily: 'Manrope'}}>
+                  GramCare
+                </span>
+                <span className="text-xs text-muted-foreground">Doctor Portal</span>
+              </div>
             </div>
           )}
           <button
@@ -117,25 +120,59 @@ function AppContent({ darkMode, setDarkMode, sidebarCollapsed, setSidebarCollaps
           })}
         </nav>
 
-        {/* Bottom Section */}
-        <div className="p-4 border-t border-border space-y-2">
-          <button 
-            className="flex items-center gap-3 px-4 py-3 w-full rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-            data-testid="settings-btn"
-          >
-            <Settings className="w-5 h-5 flex-shrink-0" />
-            {!sidebarCollapsed && <span>Settings</span>}
-          </button>
-          
-          <button 
-            onClick={onLogout}
-            className="flex items-center gap-3 px-4 py-3 w-full rounded-lg text-muted-foreground hover:bg-green-500/10 hover:text-green-600 transition-colors"
-            data-testid="switch-portal-btn"
-          >
-            <LogOut className="w-5 h-5 flex-shrink-0" />
-            {!sidebarCollapsed && <span>Switch Portal</span>}
-          </button>
-        </div>
+        {/* Doctor Profile Section */}
+        {!sidebarCollapsed && (
+          <div className="p-4 border-t border-border">
+            <div className="flex items-center gap-3 mb-3">
+              <img 
+                src={doctorProfile.avatar}
+                alt={doctorProfile.name}
+                className="w-10 h-10 rounded-full object-cover border-2 border-primary"
+              />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-foreground truncate">
+                  {doctorProfile.name}
+                </p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {doctorProfile.specialization}
+                </p>
+              </div>
+            </div>
+            <button 
+              className="flex items-center gap-3 px-4 py-2 w-full rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors mb-2"
+              data-testid="settings-btn"
+            >
+              <Settings className="w-4 h-4 flex-shrink-0" />
+              <span className="text-sm">Settings</span>
+            </button>
+            <button 
+              onClick={onLogout}
+              className="flex items-center gap-3 px-4 py-2 w-full rounded-lg text-muted-foreground hover:bg-green-500/10 hover:text-green-600 transition-colors"
+              data-testid="switch-portal-btn"
+            >
+              <LogOut className="w-4 h-4 flex-shrink-0" />
+              <span className="text-sm">Switch Portal</span>
+            </button>
+          </div>
+        )}
+
+        {sidebarCollapsed && (
+          <div className="p-4 border-t border-border space-y-2">
+            <button 
+              className="flex items-center justify-center w-full p-2 rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+              data-testid="settings-btn"
+            >
+              <Settings className="w-5 h-5" />
+            </button>
+            <button 
+              onClick={onLogout}
+              className="flex items-center justify-center w-full p-2 rounded-lg text-muted-foreground hover:bg-green-500/10 hover:text-green-600 transition-colors"
+              data-testid="switch-portal-btn"
+            >
+              <LogOut className="w-5 h-5" />
+            </button>
+          </div>
+        )}
       </aside>
 
       {/* Main Content Area */}
@@ -145,9 +182,9 @@ function AppContent({ darkMode, setDarkMode, sidebarCollapsed, setSidebarCollaps
           <div className="flex items-center gap-4">
             <div>
               <h1 className="text-lg font-bold text-foreground" style={{fontFamily: 'Manrope'}}>
-                GramCare | Rural Health Centre
+                GramCare Doctor Portal
               </h1>
-              <p className="text-xs text-muted-foreground">Dharampur, Gujarat</p>
+              <p className="text-xs text-muted-foreground">Remote Consultation Platform</p>
             </div>
           </div>
 
@@ -155,7 +192,7 @@ function AppContent({ darkMode, setDarkMode, sidebarCollapsed, setSidebarCollaps
           <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-500/10 border border-green-500/20">
             <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse-gentle"></div>
             <span className="text-sm font-medium text-foreground">
-              CHA: Priya Sharma | Server Active
+              Online | 6 Patients Waiting
             </span>
           </div>
 
@@ -190,7 +227,7 @@ function AppContent({ darkMode, setDarkMode, sidebarCollapsed, setSidebarCollaps
 
             <button
               onClick={onLogout}
-              className="px-4 py-2 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary font-medium transition-colors text-sm"
+              className="px-4 py-2 rounded-lg bg-green-500/10 hover:bg-green-500/20 text-green-600 font-medium transition-colors text-sm"
               data-testid="switch-portal-btn"
               title="Go back to login page to switch portal"
             >
@@ -199,13 +236,13 @@ function AppContent({ darkMode, setDarkMode, sidebarCollapsed, setSidebarCollaps
 
             <div className="flex items-center gap-2 ml-2">
               <img 
-                src="https://images.unsplash.com/photo-1659353888906-adb3e0041693?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ6MzR8MHwxfHNlYXJjaHwyfHxpbmRpYW4lMjBkb2N0b3IlMjBwb3J0cmFpdCUyMHByb2Zlc3Npb25hbHxlbnwwfHx8fDE3NzAwNDAyMjR8MA&ixlib=rb-4.1.0&q=85"
-                alt="GramCare Logo"
+                src={doctorProfile.avatar}
+                alt={doctorProfile.name}
                 className="w-8 h-8 rounded-full object-cover border-2 border-primary"
-                data-testid="logo-image"
+                data-testid="doctor-avatar"
               />
               <span className="font-bold text-foreground hidden md:block" style={{fontFamily: 'Manrope'}}>
-                GramCare
+                {doctorProfile.name.split(' ')[1]}
               </span>
             </div>
           </div>
@@ -214,13 +251,12 @@ function AppContent({ darkMode, setDarkMode, sidebarCollapsed, setSidebarCollaps
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto bg-background">
           <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/register" element={<PatientRegistration />} />
-            <Route path="/patient-registration" element={<PatientRegistration />} />
-            <Route path="/history" element={<MedicalHistory />} />
-            <Route path="/appointments" element={<Appointments />} />
-            <Route path="/patient-search" element={<PatientSearch />} />
-            <Route path="/inventory" element={<MedicineInventory />} />
+            <Route path="/" element={<DoctorDashboard />} />
+            <Route path="/queue" element={<PatientQueue />} />
+            <Route path="/consultation" element={<ConsultationInterface />} />
+            <Route path="/consultation/:patientId" element={<ConsultationInterface />} />
+            <Route path="/appointments" element={<DoctorAppointments />} />
+            <Route path="/patient-history" element={<PatientHistoryDoctor />} />
           </Routes>
         </main>
       </div>
@@ -228,4 +264,4 @@ function AppContent({ darkMode, setDarkMode, sidebarCollapsed, setSidebarCollaps
   );
 }
 
-export default App;
+export default DoctorApp;

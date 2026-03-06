@@ -1,48 +1,79 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Users, Clock, CheckCircle, AlertTriangle, 
   Activity, Thermometer, Heart, Wind,
   Phone, Ambulance, Hospital, TrendingUp
 } from 'lucide-react';
-import { patientQueue, quickStats, emergencyContacts } from '../mockData';
+import { emergencyContacts, appointments as initialAppointments, getQuickStats } from '../mockData';
 
 export default function Dashboard() {
-  const [vitalsData, setVitalsData] = useState({
-    bloodPressure: '',
-    heartRate: '',
-    temperature: '',
-    spo2: '',
-    weight: ''
+  const navigate = useNavigate();
+  const liveQueueRef = useRef(null);
+  
+  // Load appointments from localStorage or use initial data
+  const [appointments, setAppointments] = useState(() => {
+    const savedAppointments = localStorage.getItem('gramcare_appointments');
+    if (savedAppointments) {
+      try {
+        const parsed = JSON.parse(savedAppointments);
+        // Convert scheduledTime back to Date objects
+        return parsed.map(apt => ({
+          ...apt,
+          scheduledTime: new Date(apt.scheduledTime)
+        }));
+      } catch (error) {
+        console.error('Error loading appointments:', error);
+        return initialAppointments;
+      }
+    }
+    return initialAppointments;
   });
+  
+  const [stats, setStats] = useState(getQuickStats(appointments));
 
-  const [validationErrors, setValidationErrors] = useState({});
+  // Update stats whenever appointments change
+  useEffect(() => {
+    setStats(getQuickStats(appointments));
+  }, [appointments]);
 
-  const handleVitalsChange = (field, value) => {
-    setVitalsData(prev => ({ ...prev, [field]: value }));
-    
-    // Real-time validation
-    const errors = { ...validationErrors };
-    
-    if (field === 'spo2' && value) {
-      if (parseFloat(value) < 94) {
-        errors.spo2 = true;
-      } else {
-        delete errors.spo2;
+  // Listen for localStorage changes from other tabs/windows
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'gramcare_appointments' && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          const updated = parsed.map(apt => ({
+            ...apt,
+            scheduledTime: new Date(apt.scheduledTime)
+          }));
+          setAppointments(updated);
+        } catch (error) {
+          console.error('Error syncing appointments:', error);
+        }
       }
-    }
+    };
     
-    if (field === 'temperature' && value) {
-      if (parseFloat(value) > 101) {
-        errors.temperature = true;
-      } else {
-        delete errors.temperature;
-      }
-    }
-    
-    setValidationErrors(errors);
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  // Get today's date (matching mockData)
+  const today = new Date('2026-02-06').toISOString().split('T')[0];
+  
+  // Filter today's appointments - only active and upcoming (exclude completed)
+  const todayAppointments = appointments
+    .filter(a => a.date === today && a.status !== 'completed')
+    .sort((a, b) => new Date(a.scheduledTime) - new Date(b.scheduledTime));
+  const criticalPatients = todayAppointments.filter(a => a.priority === 'high');
+
+  // Smooth scroll to Live Queue section
+  const scrollToLiveQueue = () => {
+    liveQueueRef.current?.scrollIntoView({ 
+      behavior: 'smooth', 
+      block: 'start' 
+    });
   };
-
-  const criticalPatients = patientQueue.filter(p => p.status === 'critical');
 
   return (
     <div className="p-8 space-y-6 animate-fade-in">
@@ -51,28 +82,32 @@ export default function Dashboard() {
         <StatCard
           icon={Users}
           label="Patients Today"
-          value={quickStats.patientsToday}
-          color="bg-blue-500"
+          value={stats.patientsToday}
+          color="bg-green-500"
           testId="stat-patients-today"
+          onClick={() => navigate('/appointments')}
+          clickable={true}
         />
         <StatCard
           icon={Clock}
           label="In Queue"
-          value={quickStats.inQueue}
+          value={stats.inQueue}
           color="bg-amber-500"
           testId="stat-in-queue"
+          onClick={scrollToLiveQueue}
+          clickable={true}
         />
         <StatCard
           icon={CheckCircle}
           label="Completed"
-          value={quickStats.completed}
+          value={stats.completed}
           color="bg-green-500"
           testId="stat-completed"
         />
         <StatCard
           icon={AlertTriangle}
           label="Critical"
-          value={quickStats.critical}
+          value={stats.critical}
           color="bg-red-500"
           testId="stat-critical"
         />
@@ -81,7 +116,7 @@ export default function Dashboard() {
       {/* Main Grid Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Live Patient Queue */}
-        <div className="lg:col-span-2 bg-card rounded-xl border border-border shadow-sm p-6 card-hover">
+        <div ref={liveQueueRef} className="lg:col-span-2 bg-card rounded-xl border border-border shadow-sm p-6 card-hover scroll-mt-24">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-foreground" style={{fontFamily: 'Manrope'}}>
               Live Patient Queue
@@ -93,52 +128,68 @@ export default function Dashboard() {
           </div>
           
           <div className="space-y-3 max-h-96 overflow-y-auto">
-            {patientQueue.map((patient, index) => (
-              <div
-                key={patient.id}
-                data-testid={`patient-queue-item-${index}`}
-                className={`
-                  p-4 rounded-lg border transition-all duration-200 hover:shadow-md
-                  ${patient.status === 'critical' 
-                    ? 'border-red-300 bg-red-50 dark:bg-red-950/20 dark:border-red-900' 
-                    : patient.status === 'completed'
-                    ? 'border-green-200 bg-green-50 dark:bg-green-950/20 dark:border-green-900'
-                    : patient.status === 'in-consultation'
-                    ? 'border-blue-200 bg-blue-50 dark:bg-blue-950/20 dark:border-blue-900'
-                    : 'border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-900'
-                  }
-                `}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className={`
-                      w-12 h-12 rounded-full flex items-center justify-center font-bold text-white
-                      ${patient.status === 'critical' ? 'bg-red-500' : 
-                        patient.status === 'completed' ? 'bg-green-500' :
-                        patient.status === 'in-consultation' ? 'bg-blue-500' : 'bg-amber-500'}
-                    `}>
-                      {patient.tokenNumber.split('-')[1]}
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-foreground">{patient.name}</h3>
-                      <p className="text-sm text-muted-foreground">Age: {patient.age} | {patient.complaint}</p>
+            {todayAppointments.length > 0 ? (
+              todayAppointments.map((appointment, index) => {
+                const isActive = appointment.status === 'active';
+                const isUpcoming = appointment.status === 'scheduled';
+                const isPriority = appointment.priority === 'high';
+                
+                return (
+                  <div
+                    key={appointment.id}
+                    data-testid={`patient-queue-item-${index}`}
+                    className={`
+                      p-4 rounded-lg border transition-all duration-200 hover:shadow-md
+                      ${isPriority && isActive
+                        ? 'border-red-300 bg-red-50 dark:bg-red-950/20 dark:border-red-900 animate-pulse-gentle' 
+                        : isActive
+                        ? 'border-red-200 bg-red-50 dark:bg-red-950/20 dark:border-red-900'
+                        : isUpcoming
+                        ? 'border-green-200 bg-green-50 dark:bg-green-950/20 dark:border-green-900'
+                        : 'border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-900'
+                      }
+                    `}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className={`
+                          w-12 h-12 rounded-full flex items-center justify-center font-bold text-white text-xs
+                          ${isPriority && isActive ? 'bg-red-600' : 
+                            isActive ? 'bg-red-500' :
+                            isUpcoming ? 'bg-green-500' : 'bg-amber-500'}
+                        `}>
+                          {appointment.time.split(':')[0]}
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-foreground">{appointment.patientName}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {appointment.age ? `Age: ${appointment.age} | ` : ''}{appointment.complaint}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={`
+                            status-dot
+                            ${isPriority && isActive ? 'status-critical' :
+                              isActive ? 'bg-red-500' :
+                              isUpcoming ? 'bg-green-500' : 'bg-amber-500'}
+                          `}></span>
+                          <span className="text-sm font-medium capitalize">
+                            {isActive ? (isPriority ? '🚨 Urgent' : 'Active') : 'Scheduled'}
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">{appointment.time}</p>
+                      </div>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className={`
-                        status-dot
-                        ${patient.status === 'critical' ? 'status-critical' :
-                          patient.status === 'completed' ? 'status-completed' :
-                          patient.status === 'in-consultation' ? 'status-in-consultation' : 'status-waiting'}
-                      `}></span>
-                      <span className="text-sm font-medium capitalize">{patient.status.replace('-', ' ')}</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">{patient.checkInTime}</p>
-                  </div>
-                </div>
+                );
+              })
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                <p>No appointments in queue</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
 
@@ -155,11 +206,11 @@ export default function Dashboard() {
             
             {criticalPatients.length > 0 ? (
               <div className="space-y-3 mb-4" data-testid="emergency-patients-list">
-                {criticalPatients.map((patient) => (
-                  <div key={patient.id} className="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg">
-                    <p className="font-semibold text-foreground">{patient.name}</p>
-                    <p className="text-sm text-muted-foreground">{patient.complaint}</p>
-                    <p className="text-xs text-red-600 dark:text-red-400 mt-1">Priority: HIGH</p>
+                {criticalPatients.map((appointment) => (
+                  <div key={appointment.id} className="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                    <p className="font-semibold text-foreground">{appointment.patientName}</p>
+                    <p className="text-sm text-muted-foreground">{appointment.complaint}</p>
+                    <p className="text-xs text-red-600 dark:text-red-400 mt-1">⚠️ Priority: HIGH | {appointment.time}</p>
                   </div>
                 ))}
               </div>
@@ -206,144 +257,18 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Vitals Quick Entry */}
-      <div className="bg-card rounded-xl border border-border shadow-sm p-6">
-        <h2 className="text-2xl font-bold text-foreground mb-6" style={{fontFamily: 'Manrope'}}>
-          Vitals Quick Entry
-        </h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Blood Pressure (mmHg)
-            </label>
-            <div className="relative">
-              <Activity className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="120/80"
-                value={vitalsData.bloodPressure}
-                onChange={(e) => handleVitalsChange('bloodPressure', e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-input rounded-md bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
-                data-testid="vitals-blood-pressure"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Heart Rate (bpm)
-            </label>
-            <div className="relative">
-              <Heart className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <input
-                type="number"
-                placeholder="72"
-                value={vitalsData.heartRate}
-                onChange={(e) => handleVitalsChange('heartRate', e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-input rounded-md bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
-                data-testid="vitals-heart-rate"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Temperature (°F)
-            </label>
-            <div className="relative">
-              <Thermometer className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <input
-                type="number"
-                step="0.1"
-                placeholder="98.6"
-                value={vitalsData.temperature}
-                onChange={(e) => handleVitalsChange('temperature', e.target.value)}
-                className={`w-full pl-10 pr-3 py-2 border rounded-md bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent
-                  ${validationErrors.temperature ? 'border-red-500 focus:ring-red-500' : 'border-input'}
-                `}
-                data-testid="vitals-temperature"
-              />
-            </div>
-            {validationErrors.temperature && (
-              <p className="text-xs text-red-500 mt-1">⚠️ High temperature (&gt; 101°F)</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              SpO2 (%)
-            </label>
-            <div className="relative">
-              <Wind className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <input
-                type="number"
-                placeholder="98"
-                value={vitalsData.spo2}
-                onChange={(e) => handleVitalsChange('spo2', e.target.value)}
-                className={`w-full pl-10 pr-3 py-2 border rounded-md bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent
-                  ${validationErrors.spo2 ? 'border-red-500 focus:ring-red-500' : 'border-input'}
-                `}
-                data-testid="vitals-spo2"
-              />
-            </div>
-            {validationErrors.spo2 && (
-              <p className="text-xs text-red-500 mt-1">⚠️ Low oxygen level (&lt; 94%)</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Weight (kg)
-            </label>
-            <div className="relative">
-              <TrendingUp className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <input
-                type="number"
-                placeholder="65"
-                value={vitalsData.weight}
-                onChange={(e) => handleVitalsChange('weight', e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-input rounded-md bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
-                data-testid="vitals-weight"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-6 flex gap-3">
-          <button 
-            className="px-6 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
-            data-testid="save-vitals-btn"
-          >
-            Save Vitals
-          </button>
-          <button 
-            className="px-6 py-2 bg-secondary text-secondary-foreground rounded-lg font-medium hover:bg-secondary/80 transition-colors"
-            data-testid="clear-vitals-btn"
-            onClick={() => {
-              setVitalsData({
-                bloodPressure: '',
-                heartRate: '',
-                temperature: '',
-                spo2: '',
-                weight: ''
-              });
-              setValidationErrors({});
-            }}
-          >
-            Clear
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
 
-function StatCard({ icon: Icon, label, value, color, testId }) {
+function StatCard({ icon: Icon, label, value, color, testId, onClick, clickable }) {
   return (
     <div 
-      className="bg-card rounded-xl border border-border shadow-sm p-6 card-hover animate-slide-in"
+      className={`bg-card rounded-xl border border-border shadow-sm p-6 card-hover animate-slide-in ${
+        clickable ? 'cursor-pointer transition-transform hover:scale-105' : ''
+      }`}
       data-testid={testId}
+      onClick={onClick}
     >
       <div className="flex items-center justify-between">
         <div>
@@ -356,6 +281,9 @@ function StatCard({ icon: Icon, label, value, color, testId }) {
           <Icon className="w-6 h-6 text-white" />
         </div>
       </div>
+      {clickable && (
+        <p className="text-xs text-primary mt-2 font-medium">Click to view →</p>
+      )}
     </div>
   );
 }
