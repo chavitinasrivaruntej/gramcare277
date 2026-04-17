@@ -3,69 +3,32 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Users, Clock, CheckCircle, AlertTriangle, 
   Activity, Thermometer, Heart, Wind,
-  Phone, Ambulance, Hospital, TrendingUp
+  Phone, Ambulance, Hospital, TrendingUp, PlayCircle
 } from 'lucide-react';
 import { emergencyContacts, appointments as initialAppointments, getQuickStats } from '../mockData';
+
+import { useUnifiedData } from '../hooks/useUnifiedData';
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const liveQueueRef = useRef(null);
-  
-  // Load appointments from localStorage or use initial data
-  const [appointments, setAppointments] = useState(() => {
-    const savedAppointments = localStorage.getItem('gramcare_appointments');
-    if (savedAppointments) {
-      try {
-        const parsed = JSON.parse(savedAppointments);
-        // Convert scheduledTime back to Date objects
-        return parsed.map(apt => ({
-          ...apt,
-          scheduledTime: new Date(apt.scheduledTime)
-        }));
-      } catch (error) {
-        console.error('Error loading appointments:', error);
-        return initialAppointments;
-      }
-    }
-    return initialAppointments;
-  });
-  
-  const [stats, setStats] = useState(getQuickStats(appointments));
+  const { patients } = useUnifiedData();
 
-  // Update stats whenever appointments change
-  useEffect(() => {
-    setStats(getQuickStats(appointments));
-  }, [appointments]);
+  // Calculate stats dynamically from unified data
+  const stats = {
+    patientsToday: patients.length,
+    inQueue: patients.filter(p => ['waiting', 'scheduled', 'urgent', 'in_progress'].includes(p.status)).length,
+    completed: patients.filter(p => p.status === 'completed').length,
+    critical: patients.filter(p => (p.priority === 'high' || p.priority === 'critical' || p.priority === 'urgent') && p.status !== 'completed').length
+  };
 
-  // Listen for localStorage changes from other tabs/windows
-  useEffect(() => {
-    const handleStorageChange = (e) => {
-      if (e.key === 'gramcare_appointments' && e.newValue) {
-        try {
-          const parsed = JSON.parse(e.newValue);
-          const updated = parsed.map(apt => ({
-            ...apt,
-            scheduledTime: new Date(apt.scheduledTime)
-          }));
-          setAppointments(updated);
-        } catch (error) {
-          console.error('Error syncing appointments:', error);
-        }
-      }
-    };
+  // Filter today's appointments - active and upcoming (exclude completed)
+  // sorting by appointment time
+  const activeQueue = patients
+    .filter(p => p.status !== 'completed')
+    .sort((a, b) => new Date(a.appointmentTime) - new Date(b.appointmentTime));
     
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
-
-  // Get today's date (matching mockData)
-  const today = new Date('2026-02-06').toISOString().split('T')[0];
-  
-  // Filter today's appointments - only active and upcoming (exclude completed)
-  const todayAppointments = appointments
-    .filter(a => a.date === today && a.status !== 'completed')
-    .sort((a, b) => new Date(a.scheduledTime) - new Date(b.scheduledTime));
-  const criticalPatients = todayAppointments.filter(a => a.priority === 'high');
+  const criticalPatients = activeQueue.filter(p => p.priority === 'high' || p.priority === 'urgent' || p.priority === 'critical');
 
   // Smooth scroll to Live Queue section
   const scrollToLiveQueue = () => {
@@ -128,15 +91,16 @@ export default function Dashboard() {
           </div>
           
           <div className="space-y-3 max-h-96 overflow-y-auto">
-            {todayAppointments.length > 0 ? (
-              todayAppointments.map((appointment, index) => {
-                const isActive = appointment.status === 'active';
-                const isUpcoming = appointment.status === 'scheduled';
-                const isPriority = appointment.priority === 'high';
+            {activeQueue.length > 0 ? (
+              activeQueue.map((appointment, index) => {
+                const isActive = appointment.status === 'in_progress' || appointment.status === 'in-progress';
+                const isUpcoming = appointment.status === 'scheduled' || appointment.status === 'waiting';
+                const isPriority = appointment.priority === 'high' || appointment.priority === 'critical' || appointment.priority === 'urgent';
+                const apptTime = new Date(appointment.appointmentTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 
                 return (
                   <div
-                    key={appointment.id}
+                    key={appointment.patientId}
                     data-testid={`patient-queue-item-${index}`}
                     className={`
                       p-4 rounded-lg border transition-all duration-200 hover:shadow-md
@@ -153,15 +117,15 @@ export default function Dashboard() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className={`
-                          w-12 h-12 rounded-full flex items-center justify-center font-bold text-white text-xs
+                          w-12 h-12 rounded-lg flex items-center justify-center font-bold text-white text-xs
                           ${isPriority && isActive ? 'bg-red-600' : 
                             isActive ? 'bg-red-500' :
                             isUpcoming ? 'bg-green-500' : 'bg-amber-500'}
                         `}>
-                          {appointment.time.split(':')[0]}
+                          {appointment.tokenId?.split('-')[1] || appointment.tokenId}
                         </div>
                         <div>
-                          <h3 className="font-semibold text-foreground">{appointment.patientName}</h3>
+                          <h3 className="font-semibold text-foreground">{appointment.name}</h3>
                           <p className="text-sm text-muted-foreground">
                             {appointment.age ? `Age: ${appointment.age} | ` : ''}{appointment.complaint}
                           </p>
@@ -179,7 +143,17 @@ export default function Dashboard() {
                             {isActive ? (isPriority ? '🚨 Urgent' : 'Active') : 'Scheduled'}
                           </span>
                         </div>
-                        <p className="text-xs text-muted-foreground">{appointment.time}</p>
+                        <p className="text-xs text-muted-foreground mb-2">{apptTime}</p>
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/consultation/${appointment.patientId}`);
+                          }}
+                          className="px-3 py-1 bg-red-600 text-white rounded-md text-[10px] font-bold hover:bg-red-700 transition-colors flex items-center gap-1 shadow-sm"
+                        >
+                          <PlayCircle className="w-3 h-3" />
+                          Start Now
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -207,10 +181,10 @@ export default function Dashboard() {
             {criticalPatients.length > 0 ? (
               <div className="space-y-3 mb-4" data-testid="emergency-patients-list">
                 {criticalPatients.map((appointment) => (
-                  <div key={appointment.id} className="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg">
-                    <p className="font-semibold text-foreground">{appointment.patientName}</p>
+                  <div key={appointment.patientId} className="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                    <p className="font-semibold text-foreground">{appointment.name}</p>
                     <p className="text-sm text-muted-foreground">{appointment.complaint}</p>
-                    <p className="text-xs text-red-600 dark:text-red-400 mt-1">⚠️ Priority: HIGH | {appointment.time}</p>
+                    <p className="text-xs text-red-600 dark:text-red-400 mt-1">⚠️ Priority: {appointment.priority.toUpperCase()} | {new Date(appointment.appointmentTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
                   </div>
                 ))}
               </div>

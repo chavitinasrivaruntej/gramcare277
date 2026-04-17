@@ -200,13 +200,13 @@ export default function ConsultationInterface() {
             <div className="h-8 w-px bg-border"></div>
             <div>
               <div className="flex items-center gap-3">
-                <h2 className="text-xl font-bold text-foreground">{selectedPatient.patientName}</h2>
-                <Badge>{selectedPatient.tokenNumber}</Badge>
+                <h2 className="text-xl font-extrabold text-[#1E3A8A] dark:text-blue-400">{selectedPatient.patientName}</h2>
+                <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200 border-blue-200">{selectedPatient.tokenNumber}</Badge>
                 {(selectedPatient.priority === 'high' || selectedPatient.priority === 'critical') && (
                   <Badge variant="destructive">Priority</Badge>
                 )}
               </div>
-              <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
+              <div className="flex items-center gap-4 text-sm font-medium text-blue-600/70 dark:text-blue-300/70 mt-1">
                 <span>ID: {selectedPatient.patientId}</span>
                 <span>•</span>
                 <span>{selectedPatient.age}Y, {selectedPatient.gender}</span>
@@ -225,11 +225,11 @@ export default function ConsultationInterface() {
                 </span>
               </div>
             )}
-            <Button variant="outline" onClick={handleSaveConsultation}>
+            <Button variant="outline" onClick={handleSaveConsultation} className="border-blue-200 text-blue-700 hover:bg-blue-50">
               <Save className="w-4 h-4 mr-2" />
               Save
             </Button>
-            <Button onClick={handleSaveConsultation}>
+            <Button onClick={handleSaveConsultation} className="bg-primary hover:bg-primary/90 shadow-md shadow-primary/20">
               <Send className="w-4 h-4 mr-2" />
               Complete Consultation
             </Button>
@@ -289,7 +289,7 @@ export default function ConsultationInterface() {
                   <p className="text-slate-500 text-sm mb-6">Click "Start Call" to begin video consultation</p>
                   <Button 
                     size="lg"
-                    className="bg-green-600 hover:bg-green-700"
+                    className="bg-primary hover:bg-primary/90 shadow-md shadow-primary/20"
                     onClick={() => setIsCallActive(true)}
                   >
                     <Video className="w-5 h-5 mr-2" />
@@ -354,7 +354,7 @@ export default function ConsultationInterface() {
 
               {isScreenSharing && (
                 <div className="mt-3 text-center">
-                  <Badge className="bg-green-600">
+                  <Badge className="bg-blue-600">
                     <Monitor className="w-3 h-3 mr-1" />
                     Screen Sharing Active
                   </Badge>
@@ -402,25 +402,25 @@ export default function ConsultationInterface() {
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="p-3 bg-muted/50 rounded-lg">
-                        <p className="text-xs text-muted-foreground mb-1">Temperature</p>
-                        <p className="text-lg font-bold">{selectedPatient.vitals.temperature}</p>
+                      <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-100 dark:border-blue-900">
+                        <p className="text-xs text-blue-600/70 dark:text-blue-300/70 mb-1 font-medium">Temperature</p>
+                        <p className="text-lg font-bold text-[#1E3A8A] dark:text-blue-400">{selectedPatient.vitals.temperature}</p>
                       </div>
-                      <div className="p-3 bg-muted/50 rounded-lg">
-                        <p className="text-xs text-muted-foreground mb-1">Blood Pressure</p>
-                        <p className="text-lg font-bold">{selectedPatient.vitals.bloodPressure}</p>
+                      <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-100 dark:border-blue-900">
+                        <p className="text-xs text-blue-600/70 dark:text-blue-300/70 mb-1 font-medium">Blood Pressure</p>
+                        <p className="text-lg font-bold text-[#1E3A8A] dark:text-blue-400">{selectedPatient.vitals.bloodPressure}</p>
                       </div>
-                      <div className="p-3 bg-muted/50 rounded-lg">
-                        <p className="text-xs text-muted-foreground mb-1">Pulse Rate</p>
-                        <p className="text-lg font-bold">{selectedPatient.vitals.pulse}</p>
+                      <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-100 dark:border-blue-900">
+                        <p className="text-xs text-blue-600/70 dark:text-blue-300/70 mb-1 font-medium">Pulse Rate</p>
+                        <p className="text-lg font-bold text-[#1E3A8A] dark:text-blue-400">{selectedPatient.vitals.pulse}</p>
                       </div>
-                      <div className="p-3 bg-muted/50 rounded-lg">
-                        <p className="text-xs text-muted-foreground mb-1">SpO2</p>
-                        <p className="text-lg font-bold">{selectedPatient.vitals.oxygenSaturation}</p>
+                      <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-100 dark:border-blue-900">
+                        <p className="text-xs text-blue-600/70 dark:text-blue-300/70 mb-1 font-medium">SpO2</p>
+                        <p className="text-lg font-bold text-[#1E3A8A] dark:text-blue-400">{selectedPatient.vitals.oxygenSaturation}</p>
                       </div>
-                      <div className="p-3 bg-muted/50 rounded-lg">
-                        <p className="text-xs text-muted-foreground mb-1">Weight</p>
-                        <p className="text-lg font-bold">{selectedPatient.vitals.weight}</p>
+                      <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-100 dark:border-blue-900">
+                        <p className="text-xs text-blue-600/70 dark:text-blue-300/70 mb-1 font-medium">Weight</p>
+                        <p className="text-lg font-bold text-[#1E3A8A] dark:text-blue-400">{selectedPatient.vitals.weight}</p>
                       </div>
                     </div>
                   </CardContent>

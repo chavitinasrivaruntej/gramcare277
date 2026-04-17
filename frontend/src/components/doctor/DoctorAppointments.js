@@ -87,10 +87,10 @@ export default function DoctorAppointments() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground mb-2" style={{fontFamily: 'Manrope'}}>
+          <h1 className="text-3xl font-extrabold text-[#1E3A8A] dark:text-blue-400 mb-1" style={{fontFamily: 'Manrope'}}>
             Appointments
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm font-medium text-blue-600/70 dark:text-blue-300/70">
             Manage your consultation schedule
           </p>
         </div>
@@ -102,51 +102,51 @@ export default function DoctorAppointments() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
+        <Card className="doctor-card-shadow">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-2xl font-bold text-foreground">{stats.today}</p>
-                <p className="text-sm text-muted-foreground">Today</p>
+                <p className="text-sm text-muted-foreground font-medium">Today</p>
               </div>
-              <Calendar className="w-8 h-8 text-green-500" />
+              <Calendar className="w-8 h-8 text-blue-600" />
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="doctor-card-shadow">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-2xl font-bold text-foreground">{stats.thisWeek}</p>
-                <p className="text-sm text-muted-foreground">This Week</p>
+                <p className="text-sm text-muted-foreground font-medium">This Week</p>
               </div>
-              <Clock className="w-8 h-8 text-green-500" />
+              <Clock className="w-8 h-8 text-blue-600" />
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="doctor-card-shadow">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-2xl font-bold text-foreground">{stats.thisMonth}</p>
-                <p className="text-sm text-muted-foreground">This Month</p>
+                <p className="text-sm text-muted-foreground font-medium">This Month</p>
               </div>
-              <User className="w-8 h-8 text-orange-500" />
+              <User className="w-8 h-8 text-amber-600" />
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="doctor-card-shadow">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-2xl font-bold text-green-600">{stats.completed}</p>
-                <p className="text-sm text-muted-foreground">Completed Today</p>
+                <p className="text-2xl font-bold text-indigo-600">{stats.completed}</p>
+                <p className="text-sm text-muted-foreground font-medium">Completed Today</p>
               </div>
-              <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
-                <span className="text-green-500 font-bold text-lg">✓</span>
+              <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                <span className="text-indigo-600 font-bold text-lg">✓</span>
               </div>
             </div>
           </CardContent>
@@ -203,8 +203,8 @@ export default function DoctorAppointments() {
                     className={`
                       aspect-square p-2 rounded-lg border cursor-pointer transition-all
                       flex flex-col items-center justify-center
-                      ${isSelected ? 'border-primary bg-primary text-white' : 'hover:border-primary/50 hover:bg-accent'}
-                      ${isToday && !isSelected ? 'border-green-500 bg-green-50 dark:bg-green-950/20' : ''}
+                      ${isSelected ? 'border-primary bg-primary text-white shadow-md shadow-primary/30' : 'hover:border-primary/50 hover:bg-blue-50'}
+                      ${isToday && !isSelected ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20' : ''}
                     `}
                   >
                     <span className="text-sm font-medium">{day}</span>
@@ -246,8 +246,8 @@ export default function DoctorAppointments() {
                     className="p-4 border rounded-lg hover:border-primary transition-colors cursor-pointer"
                   >
                     <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <User className="w-5 h-5 text-primary" />
+                      <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                        <User className="w-5 h-5 text-blue-600" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="font-semibold text-sm text-foreground mb-1">
@@ -266,14 +266,14 @@ export default function DoctorAppointments() {
                           </span>
                         </div>
                         <div className="flex gap-1">
-                          <Button size="sm" variant="outline" className="h-7 px-2 text-xs">
+                          <Button size="sm" variant="outline" className="h-7 px-2 text-xs border-blue-200 text-blue-700 hover:bg-blue-50">
                             <Video className="w-3 h-3 mr-1" />
                             Join
                           </Button>
-                          <Button size="sm" variant="outline" className="h-7 px-2 text-xs">
+                          <Button size="sm" variant="outline" className="h-7 px-2 text-xs border-blue-200 text-blue-700 hover:bg-blue-50">
                             <Phone className="w-3 h-3" />
                           </Button>
-                          <Button size="sm" variant="outline" className="h-7 px-2 text-xs">
+                          <Button size="sm" variant="outline" className="h-7 px-2 text-xs border-blue-200 text-blue-700 hover:bg-blue-50">
                             <MessageSquare className="w-3 h-3" />
                           </Button>
                         </div>

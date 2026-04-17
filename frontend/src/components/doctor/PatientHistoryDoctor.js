@@ -20,8 +20,8 @@ export default function PatientHistoryDoctor() {
   );
 
   const filteredPatients = patientsWithHistory.filter(patient =>
-    patient.patientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    patient.patientId.toLowerCase().includes(searchQuery.toLowerCase())
+    (patient?.patientName?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+    (patient?.patientId?.toLowerCase() || "").includes(searchQuery.toLowerCase())
   );
 
   const toggleSection = (section) => {
@@ -35,10 +35,10 @@ export default function PatientHistoryDoctor() {
     <div className="p-6 space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-foreground mb-2" style={{fontFamily: 'Manrope'}}>
+        <h1 className="text-3xl font-extrabold text-[#1E3A8A] dark:text-blue-400 mb-1" style={{fontFamily: 'Manrope'}}>
           Patient Medical Records
         </h1>
-        <p className="text-muted-foreground">
+        <p className="text-sm font-medium text-blue-600/70 dark:text-blue-300/70">
           View complete medical history and consultation records
         </p>
       </div>
@@ -68,8 +68,8 @@ export default function PatientHistoryDoctor() {
                     key={patient.patientId}
                     className={`p-4 rounded-lg border cursor-pointer transition-all ${
                       selectedPatient?.patientId === patient.patientId
-                        ? 'border-primary bg-primary/5'
-                        : 'hover:border-primary/50 hover:bg-accent'
+                        ? 'border-primary bg-primary/5 shadow-sm shadow-primary/10'
+                        : 'hover:border-primary/50 hover:bg-blue-50'
                     }`}
                     onClick={() => setSelectedPatient(patient)}
                   >
@@ -111,7 +111,7 @@ export default function PatientHistoryDoctor() {
                       {selectedPatient.patientName.split(' ').map(n => n[0]).join('')}
                     </div>
                     <div className="flex-1">
-                      <h2 className="text-2xl font-bold text-foreground mb-2">
+                      <h2 className="text-2xl font-extrabold text-[#1E3A8A] dark:text-blue-400 mb-2">
                         {selectedPatient.patientName}
                       </h2>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
@@ -146,7 +146,7 @@ export default function PatientHistoryDoctor() {
                   {patientMedicalHistory[selectedPatient.patientId].allergies?.length > 0 && (
                     <Card className="border-red-200 bg-red-50 dark:bg-red-950/20">
                       <CardHeader>
-                        <CardTitle className="text-lg flex items-center gap-2 text-red-600">
+                        <CardTitle className="text-lg flex items-center gap-2 text-rose-600">
                           <AlertCircle className="w-5 h-5" />
                           Allergies & Important Warnings
                         </CardTitle>
@@ -168,14 +168,14 @@ export default function PatientHistoryDoctor() {
                     <Card>
                       <CardHeader>
                         <CardTitle className="text-lg flex items-center gap-2">
-                          <Activity className="w-5 h-5 text-orange-500" />
+                          <Activity className="w-5 h-5 text-amber-600" />
                           Chronic Conditions
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="flex flex-wrap gap-2">
                           {patientMedicalHistory[selectedPatient.patientId].chronicConditions.map((condition, index) => (
-                            <Badge key={index} variant="outline" className="text-sm bg-orange-100 text-orange-700 border-orange-300">
+                            <Badge key={index} variant="outline" className="text-sm bg-amber-50 text-amber-700 border-amber-200 font-medium">
                               {condition}
                             </Badge>
                           ))}
@@ -189,15 +189,15 @@ export default function PatientHistoryDoctor() {
                     <Card>
                       <CardHeader>
                         <CardTitle className="text-lg flex items-center gap-2">
-                          <Pill className="w-5 h-5 text-green-500" />
+                          <Pill className="w-5 h-5 text-blue-600" />
                           Current Medications
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="space-y-2">
                           {patientMedicalHistory[selectedPatient.patientId].currentMedications.map((medication, index) => (
-                            <div key={index} className="p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200">
-                              <p className="font-medium text-sm">{medication}</p>
+                            <div key={index} className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-900 shadow-sm">
+                              <p className="font-semibold text-sm text-[#1E3A8A] dark:text-blue-300">{medication}</p>
                             </div>
                           ))}
                         </div>
@@ -257,7 +257,7 @@ export default function PatientHistoryDoctor() {
                     <Card>
                       <CardHeader>
                         <CardTitle className="text-lg flex items-center gap-2">
-                          <FileText className="w-5 h-5 text-green-500" />
+                          <FileText className="w-5 h-5 text-indigo-600" />
                           Consultation History ({patientMedicalHistory[selectedPatient.patientId].consultationHistory.length})
                         </CardTitle>
                       </CardHeader>

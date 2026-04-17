@@ -1,22 +1,8 @@
-import { useState, useEffect } from 'react';
-import { User, Calendar, Phone, MapPin, FileText, Camera, Save, CheckCircle } from 'lucide-react';
-import { patientsDatabase as initialPatients } from '../mockData';
+import { useState } from 'react';
+import { User, Calendar, Phone, MapPin, FileText, Camera, Save, CheckCircle, Stethoscope } from 'lucide-react';
+import { dataEngine } from '../lib/dataEngine';
 
 export default function PatientRegistration() {
-  // Load patients from localStorage or use initial data
-  const [patients, setPatients] = useState(() => {
-    const savedPatients = localStorage.getItem('gramcare_patients');
-    if (savedPatients) {
-      try {
-        return JSON.parse(savedPatients);
-      } catch (error) {
-        console.error('Error loading patients:', error);
-        return initialPatients;
-      }
-    }
-    return initialPatients;
-  });
-
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -34,15 +20,11 @@ export default function PatientRegistration() {
     temperature: '',
     weight: '',
     height: '',
-    oxygenSaturation: ''
+    oxygenSaturation: '',
+    complaint: ''
   });
 
   const [showSuccess, setShowSuccess] = useState(false);
-
-  // Save patients to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem('gramcare_patients', JSON.stringify(patients));
-  }, [patients]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -53,62 +35,58 @@ export default function PatientRegistration() {
       return;
     }
 
-    // Generate new patient ID
-    const newId = `P${String(patients.length + 1).padStart(3, '0')}`;
-    
-    // Create new patient object
+    // Create unified patient object
     const newPatient = {
-      id: newId,
       name: `${formData.firstName} ${formData.lastName}`,
       age: parseInt(formData.age),
       gender: formData.gender,
-      phone: formData.phone,
-      village: formData.village || 'Dharampur',
-      bloodGroup: formData.bloodGroup || 'Not specified',
-      medicalHistory: formData.chronicConditions || 'None',
-      allergies: formData.allergies || 'None',
-      emergencyContact: formData.emergencyContact || '',
-      address: formData.address || '',
-      registeredDate: new Date().toISOString().split('T')[0],
+      complaint: formData.complaint || "Routine checkup",
+      priority: 'normal', // Default, can be updated later
       vitals: {
-        bloodPressure: formData.bloodPressure || 'Not recorded',
-        heartRate: formData.heartRate || 'Not recorded',
-        temperature: formData.temperature || 'Not recorded',
-        weight: formData.weight || 'Not recorded',
-        height: formData.height || 'Not recorded',
-        oxygenSaturation: formData.oxygenSaturation || 'Not recorded'
-      }
+        bloodPressure: formData.bloodPressure || 'N/A',
+        pulse: formData.heartRate || 'N/A', // HR mapped to pulse in unified schema
+        temperature: formData.temperature || 'N/A',
+        weight: formData.weight || 'N/A',
+        oxygenSaturation: formData.oxygenSaturation || 'N/A'
+      },
+      // Additional metadata
+      phone: formData.phone,
+      village: formData.village,
+      allergies: formData.allergies ? formData.allergies.split(',').map(s => s.trim()) : [],
     };
 
-    // Add to patients array
-    setPatients([...patients, newPatient]);
+    // Add to unified engine
+    const addedPatient = dataEngine.addPatient(newPatient);
 
-    // Show success message
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 3000);
+    if (addedPatient) {
+      // Show success message
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
 
-    // Reset form
-    setFormData({
-      firstName: '',
-      lastName: '',
-      age: '',
-      gender: '',
-      phone: '',
-      address: '',
-      village: '',
-      emergencyContact: '',
-      bloodGroup: '',
-      allergies: '',
-      chronicConditions: '',
-      bloodPressure: '',
-      heartRate: '',
-      temperature: '',
-      weight: '',
-      height: '',
-      oxygenSaturation: ''
-    });
-
-    console.log('Patient registered:', newPatient);
+      // Reset form
+      setFormData({
+        firstName: '',
+        lastName: '',
+        age: '',
+        gender: '',
+        phone: '',
+        address: '',
+        village: '',
+        emergencyContact: '',
+        bloodGroup: '',
+        allergies: '',
+        chronicConditions: '',
+        bloodPressure: '',
+        heartRate: '',
+        temperature: '',
+        weight: '',
+        height: '',
+        oxygenSaturation: '',
+        complaint: ''
+      });
+      
+      console.log('Patient registered via Unified Engine:', addedPatient);
+    }
   };
 
   const handleChange = (field, value) => {

@@ -23,8 +23,12 @@ import PatientQueue from "./components/doctor/PatientQueue";
 import ConsultationInterface from "./components/doctor/ConsultationInterface";
 import DoctorAppointments from "./components/doctor/DoctorAppointments";
 import PatientHistoryDoctor from "./components/doctor/PatientHistoryDoctor";
+import NotificationPopup from "./components/doctor/NotificationPopup";
+import PatientDashboardDemo from "./components/PatientDashboardDemo";
 
 import { doctorProfile } from "./mockDataDoctor";
+import { consultationEvents } from "./lib/consultationEvents";
+import { Info, AlertCircle } from "lucide-react";
 
 function MainApp() {
   const [darkMode, setDarkMode] = useState(false);
@@ -86,6 +90,9 @@ function AppRouter({ darkMode, setDarkMode }) {
           <PatientPortalLayout darkMode={darkMode} setDarkMode={setDarkMode} />
         } />
         
+        {/* Patient Demo Portal Routes */}
+        <Route path="/patient" element={<PatientDashboardDemo />} />
+
         {/* Doctor Portal Routes */}
         <Route path="/doctor/*" element={
           <DoctorPortalLayout darkMode={darkMode} setDarkMode={setDarkMode} />
@@ -264,6 +271,49 @@ function PatientPortalLayout({ darkMode, setDarkMode }) {
 function DoctorPortalLayout({ darkMode, setDarkMode }) {
   const location = useLocation();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [notifications, setNotifications] = useState(() => consultationEvents.getNotifications());
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      // Refresh notifications list from storage
+      const updated = consultationEvents.getNotifications();
+      setNotifications(updated);
+
+      // Handle new consultation event specifically if it's 'requested'
+      const eventJson = localStorage.getItem('gramcare_consultation_event');
+      if (eventJson) {
+        try {
+          const event = JSON.parse(eventJson);
+          if (event.status === 'requested' && event.source === 'rural_health_centre') {
+            // Check if this notification already exists to avoid dupes (id is random, so check patientId + source logic)
+            const exists = updated.some(n => n.patientId === event.patientId && n.status === 'requested');
+            if (!exists) {
+               consultationEvents.addNotification({
+                  title: 'Urgent Consultation Requested',
+                  message: `${event.name} is waiting for consultation.`,
+                  patientId: event.patientId,
+                  status: 'requested',
+                  type: 'urgent'
+               });
+            }
+          }
+        } catch (err) {
+          console.error("Notification Event Parse Error", err);
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  const unreadCount = notifications.filter(n => n.unread).length;
+
+  const markAllRead = () => {
+    consultationEvents.markAsRead();
+    setShowNotifications(false);
+  };
 
   const navItems = [
     { path: '/doctor', icon: Home, label: 'Dashboard' },
@@ -379,6 +429,7 @@ function DoctorPortalLayout({ darkMode, setDarkMode }) {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
+        <NotificationPopup />
         {/* Top Navigation */}
         <header className="h-16 glass-effect border-b border-border flex items-center justify-between px-6 z-10">
           <div className="flex items-center gap-4">
@@ -400,13 +451,61 @@ function DoctorPortalLayout({ darkMode, setDarkMode }) {
 
           {/* Right Section */}
           <div className="flex items-center gap-3">
-            <button 
-              className="p-2 rounded-lg hover:bg-accent transition-colors relative"
-              data-testid="notifications-btn"
-            >
-              <Bell className="w-5 h-5 text-muted-foreground" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full"></span>
-            </button>
+            <div className="relative">
+              <button 
+                className="p-2 rounded-lg hover:bg-accent transition-colors relative"
+                onClick={() => setShowNotifications(!showNotifications)}
+                data-testid="notifications-btn"
+              >
+                <Bell className="w-5 h-5 text-muted-foreground" />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-destructive rounded-full border-2 border-white animate-pulse shadow-sm"></span>
+                )}
+              </button>
+
+              {/* Persistent Notification Dropdown */}
+              {showNotifications && (
+                <div className="absolute right-0 mt-3 w-80 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl z-[100] animate-in fade-in slide-in-from-top-2 overflow-hidden ring-1 ring-black/5">
+                  <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-blue-50/10 dark:bg-blue-900/10">
+                    <h4 className="font-black text-xs text-[#1E3A8A] dark:text-blue-400 uppercase tracking-widest">Clinical Alerts</h4>
+                    <button onClick={markAllRead} className="text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-tighter">Mark all as read</button>
+                  </div>
+                  <div className="max-h-96 overflow-y-auto custom-scrollbar">
+                    {notifications.length > 0 ? (
+                      <div className="divide-y divide-slate-50 dark:divide-slate-800/50">
+                        {notifications.map(n => (
+                          <div key={n.id} className={`p-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors relative ${n.unread ? 'bg-blue-50/20 dark:bg-blue-900/5' : ''}`}>
+                            {n.unread && <div className="absolute left-1 top-1/2 -translate-y-1/2 w-1 h-8 bg-blue-500 rounded-full"></div>}
+                            <div className="flex gap-3">
+                              <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 shadow-sm ${n.type === 'urgent' ? 'bg-rose-100 text-rose-600' : 'bg-blue-100 text-blue-600'}`}>
+                                 {n.type === 'urgent' ? <AlertCircle className="w-4 h-4" /> : <Info className="w-4 h-4" />}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-bold text-slate-800 dark:text-slate-200 leading-tight truncate">{n.title}</p>
+                                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-snug">{n.message}</p>
+                                <p className="text-[9px] text-slate-400 mt-2 font-black uppercase tracking-tight">{new Date(n.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="p-12 text-center">
+                        <div className="w-12 h-12 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-3">
+                          <Bell className="w-6 h-6 text-slate-200" />
+                        </div>
+                        <p className="text-xs text-slate-400 font-bold tracking-tight">Clinical log is clear</p>
+                      </div>
+                    )}
+                  </div>
+                  {notifications.length > 0 && (
+                    <div className="p-3 bg-slate-50/50 dark:bg-slate-950/50 border-t border-slate-100 dark:border-slate-800 text-center">
+                       <button className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-primary transition-colors">View All Incident Reports</button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
             
             <button 
               className="p-2 rounded-lg hover:bg-accent transition-colors"

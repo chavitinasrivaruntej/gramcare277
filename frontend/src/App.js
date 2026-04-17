@@ -13,6 +13,7 @@ import MedicalHistory from "./components/MedicalHistory";
 import Appointments from "./components/Appointments";
 import MedicineInventory from "./components/MedicineInventory";
 import PatientSearch from "./components/PatientSearch";
+import RHCConsultation from "./components/RHCConsultation";
 
 function App({ onLogout }) {
   const [darkMode, setDarkMode] = useState(false);
@@ -221,6 +222,7 @@ function AppContent({ darkMode, setDarkMode, sidebarCollapsed, setSidebarCollaps
             <Route path="/appointments" element={<Appointments />} />
             <Route path="/patient-search" element={<PatientSearch />} />
             <Route path="/inventory" element={<MedicineInventory />} />
+            <Route path="/consultation/:patientId" element={<RHCConsultation />} />
           </Routes>
         </main>
       </div>

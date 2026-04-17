@@ -21,9 +21,11 @@ export const todayConsultations = [
     age: 45,
     gender: 'Male',
     tokenNumber: 'T-101',
-    status: 'waiting', // waiting, in-progress, completed, cancelled
+    status: 'waiting',
     checkInTime: '08:30 AM',
-    priority: 'normal', // normal, high, critical
+    scheduledTime: '09:00 AM',
+    appointmentType: 'Emergency',
+    priority: 'critical',
     complaint: 'Fever and body ache for 3 days',
     vitals: {
       temperature: '101.2°F',
@@ -33,7 +35,8 @@ export const todayConsultations = [
       weight: '72 kg'
     },
     previousVisits: 2,
-    lastVisit: '2026-01-15'
+    lastVisit: '2026-01-15',
+    allergies: ['Penicillin']
   },
   {
     id: 'C002',
@@ -44,6 +47,8 @@ export const todayConsultations = [
     tokenNumber: 'T-102',
     status: 'waiting',
     checkInTime: '08:45 AM',
+    scheduledTime: '09:15 AM',
+    appointmentType: 'Follow-up',
     priority: 'high',
     complaint: 'Chest pain and breathlessness',
     vitals: {
@@ -54,7 +59,8 @@ export const todayConsultations = [
       weight: '65 kg'
     },
     previousVisits: 8,
-    lastVisit: '2026-02-18'
+    lastVisit: '2026-02-18',
+    allergies: []
   },
   {
     id: 'C003',
@@ -65,6 +71,8 @@ export const todayConsultations = [
     tokenNumber: 'T-105',
     status: 'in-progress',
     checkInTime: '09:30 AM',
+    scheduledTime: '10:00 AM',
+    appointmentType: 'Scheduled',
     priority: 'normal',
     complaint: 'Diabetes follow-up, blood sugar management',
     vitals: {
@@ -75,7 +83,8 @@ export const todayConsultations = [
       weight: '78 kg'
     },
     previousVisits: 15,
-    lastVisit: '2026-01-30'
+    lastVisit: '2026-01-30',
+    allergies: []
   },
   {
     id: 'C004',
@@ -86,6 +95,8 @@ export const todayConsultations = [
     tokenNumber: 'T-106',
     status: 'waiting',
     checkInTime: '09:45 AM',
+    scheduledTime: '10:15 AM',
+    appointmentType: 'Virtual',
     priority: 'high',
     complaint: 'High blood pressure, dizziness',
     vitals: {
@@ -96,7 +107,8 @@ export const todayConsultations = [
       weight: '58 kg'
     },
     previousVisits: 12,
-    lastVisit: '2026-02-10'
+    lastVisit: '2026-02-10',
+    allergies: ['Dust']
   },
   {
     id: 'C005',
@@ -107,6 +119,8 @@ export const todayConsultations = [
     tokenNumber: 'T-104',
     status: 'waiting',
     checkInTime: '09:15 AM',
+    scheduledTime: '10:30 AM',
+    appointmentType: 'Scheduled',
     priority: 'normal',
     complaint: 'Pregnancy checkup - 24 weeks',
     vitals: {
@@ -117,7 +131,8 @@ export const todayConsultations = [
       weight: '62 kg'
     },
     previousVisits: 5,
-    lastVisit: '2026-01-25'
+    lastVisit: '2026-01-25',
+    allergies: []
   },
   {
     id: 'C006',
@@ -128,6 +143,8 @@ export const todayConsultations = [
     tokenNumber: 'T-107',
     status: 'waiting',
     checkInTime: '10:00 AM',
+    scheduledTime: '11:00 AM',
+    appointmentType: 'New Patient',
     priority: 'normal',
     complaint: 'Skin rash on arms and legs',
     vitals: {
@@ -138,7 +155,8 @@ export const todayConsultations = [
       weight: '70 kg'
     },
     previousVisits: 1,
-    lastVisit: '2025-12-20'
+    lastVisit: '2025-12-20',
+    allergies: ['Latex']
   },
   {
     id: 'C007',
@@ -149,6 +167,8 @@ export const todayConsultations = [
     tokenNumber: 'T-103',
     status: 'completed',
     checkInTime: '09:00 AM',
+    scheduledTime: '09:30 AM',
+    appointmentType: 'Follow-up',
     completedTime: '09:25 AM',
     priority: 'normal',
     complaint: 'Minor cut, dressing required',
@@ -160,7 +180,8 @@ export const todayConsultations = [
       weight: '68 kg'
     },
     previousVisits: 0,
-    lastVisit: null
+    lastVisit: null,
+    allergies: []
   }
 ];
 

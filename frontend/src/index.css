@@ -64,6 +64,54 @@ code {
         --ring: 142.1 70.6% 45.3%;
         /* Green shade */
     }
+
+    .doctor-portal {
+        --background: 210 100% 98%;
+        --foreground: 222.2 84% 4.9%;
+        --card: 0 0% 100%;
+        --card-foreground: 222.2 84% 4.9%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 222.2 84% 4.9%;
+        --primary: 221.2 83.2% 53.3%; /* Medical Blue #2563EB */
+        --primary-foreground: 210 40% 98%;
+        --secondary: 221.2 83.2% 53.3%;
+        --secondary-foreground: 210 40% 98%;
+        --muted: 213.9 100% 96.9%; /* Soft Blue Background #EFF6FF */
+        --muted-foreground: 215.4 16.3% 46.9%;
+        --accent: 213.9 93.5% 92.4%; /* Soft Blue Hover #DBEAFE */
+        --accent-foreground: 222.2 84% 4.9%;
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 210 40% 98%;
+        --border: 214.3 31.8% 91.4%;
+        --input: 214.3 31.8% 91.4%;
+        --ring: 221.2 83.2% 53.3%;
+        --sb-collapsed: 80px;
+        --sb-expanded: 260px;
+        --radius: 0.75rem;
+    }
+
+    .doctor-portal-bg {
+        background: radial-gradient(circle at top right, #EFF6FF 0%, #FFFFFF 100%);
+    }
+
+    .doctor-sidebar-gradient {
+        background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
+    }
+
+    .doctor-portal.dark {
+        --background: 222.2 84% 4.9%;
+        --foreground: 210 40% 98%;
+        --card: 222.2 84% 10%;
+        --card-foreground: 210 40% 98%;
+        --primary: 217.2 91.2% 59.8%;
+        --primary-foreground: 222.2 47.4% 11.2%;
+        --muted: 222.2 47.4% 11.2%;
+        --muted-foreground: 215 20.2% 65.1%;
+        --accent: 222.2 47.4% 20.2%;
+        --accent-foreground: 210 40% 98%;
+        --border: 222.2 47.4% 20.2%;
+        --ring: 217.2 91.2% 59.8%;
+    }
 }
 
 @layer base {
@@ -96,6 +144,78 @@ code {
         background: rgba(30, 41, 59, 0.7);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
+    }
+
+    .doctor-card-shadow {
+        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.05), 0 2px 4px -1px rgba(37, 99, 235, 0.03);
+    }
+
+    .doctor-card-hover {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .doctor-card-hover:hover {
+        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.1), 0 4px 6px -2px rgba(37, 99, 235, 0.05);
+        transform: translateY(-2px);
+    }
+
+    .medical-pill {
+        @apply px-4 py-1.5 rounded-full text-sm font-semibold transition-all duration-200 border-2;
+    }
+
+    .doctor-pill-active {
+        @apply bg-primary text-white border-primary shadow-md shadow-primary/20;
+    }
+
+    .doctor-pill-inactive {
+        @apply bg-transparent text-muted-foreground border-border hover:border-primary/50 hover:text-primary;
+    }
+
+    /* Status Specific Pills */
+    .pill-green { @apply bg-green-50 text-green-700 border-green-200 hover:bg-green-100; }
+    .pill-red { @apply bg-red-50 text-red-700 border-red-200 hover:bg-red-100; }
+    .pill-blue { @apply bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100; }
+    .pill-amber { @apply bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100; }
+
+    .vitals-chip {
+        @apply flex flex-col p-2 bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100/50 dark:border-blue-800/50 rounded-lg;
+    }
+
+    .clinical-shadow {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+    }
+
+    /* Sidebar Transitions & Hover Expand */
+    .sb-transition {
+        transition: width 350ms cubic-bezier(0.4, 0, 0.2, 1), transform 350ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 350ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .doctor-sidebar-expanded {
+        width: var(--sb-expanded) !important;
+        box-shadow: 20px 0 25px -5px rgba(37, 99, 235, 0.05), 10px 0 10px -5px rgba(37, 99, 235, 0.02);
+    }
+
+    .doctor-main-content {
+        margin-left: var(--sb-collapsed);
+        transition: margin-left 350ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Active Nav Item */
+    .nav-active {
+        @apply bg-[#2563EB] text-white shadow-lg shadow-blue-500/20;
+    }
+
+    .nav-hover {
+        @apply hover:bg-blue-50 hover:text-[#1E3A8A];
+    }
+
+    .sb-text-reveal {
+        animation: text-reveal 400ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    @keyframes text-reveal {
+        from { opacity: 0; transform: translateX(-10px); }
+        to { opacity: 1; transform: translateX(0); }
     }
 }
 
